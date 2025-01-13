@@ -107,7 +107,8 @@ Optional<capture_metadata> read_metadata_file(const fs::path& path) {
             continue;
     }
 
-    if (metadata.center_frequency == 0 || metadata.sample_rate == 0)
+    //if (metadata.center_frequency == 0 || metadata.sample_rate == 0)
+    if (metadata.center_frequency == 0 && metadata.sample_rate == 0)
         return {};  // Parse failed.
 
     return metadata;

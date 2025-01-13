@@ -457,10 +457,10 @@ DeclareTargets(PREP replay)
 
 ### Signal generator
 
-set(MODE_CPPSRC
-	proc_siggen.cpp
-)
-DeclareTargets(PSIG siggen)
+# set(MODE_CPPSRC
+# 	proc_siggen.cpp
+# )
+# DeclareTargets(PSIG siggen)
 
 
 
@@ -512,6 +512,14 @@ set(MODE_CPPSRC
 	${FATFSSRC}
 )
 DeclareTargets(PFUT flash_utility)
+
+### signal generator
+
+set(MODE_CPPSRC
+	proc_sig_gen.cpp
+)
+DeclareTargets(PSGE sig_gen)
+
 
 ### SD over USB
 
