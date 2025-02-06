@@ -215,6 +215,8 @@ SigGenAppView::SigGenAppView(
     button_load_last_config.on_select = [this, &nav](Button&) {
         load_last_config();
     };
+
+    check_loop.set_value(TRUE);
 }
 
 void SigGenAppView::load_last_config(){
@@ -225,9 +227,6 @@ void SigGenAppView::load_last_config(){
         std::filesystem::path sigwave_path = conv.from_bytes(result.value().c_str());
         on_file_changed(sigwave_path);
     }
-
-    if (parent())
-        button_play.focus();
 }
 
 void SigGenAppView::save_last_config(const fs::path& new_file_path){

@@ -107,20 +107,20 @@ class SigGenAppView : public View {
         {18 * 8, 1 * 16, 12 * 8, 16}};
 
     TxFrequencyField field_frequency{
-        {0 * 8, 2 * 16},
+        {2 * 8, 2 * 16},
         nav_};
 
     TransmitterView2 tx_view{
-        {11 * 8, 2 * 16},
+        {12 * 8, 2 * 16},
         /*short_ui*/ true};
 
     Checkbox check_loop{
-        {21 * 8, 2 * 16},
+        {23 * 8, 2 * 16},
         4,
         LanguageHelper::currentMessages[LANG_LOOP],
         true};
     ImageButton button_play{
-        {28 * 8, 2 * 16, 2 * 8, 1 * 16},
+        {0 * 8, 2 * 16, 2 * 8, 1 * 16},
         &bitmap_play,
         Theme::getInstance()->fg_green->foreground,
         Theme::getInstance()->fg_green->background};
