@@ -127,6 +127,7 @@ class Message {
         FreqChangeCommand = 70,
         I2CDevListChanged = 71,
         LightData = 72,
+        CyclicTxCtr = 73,
         MAX
     };
 
@@ -1435,6 +1436,16 @@ class I2CDevListChangedMessage : public Message {
    public:
     constexpr I2CDevListChangedMessage()
         : Message{ID::I2CDevListChanged} {}
+};
+
+
+class CyclicTXCtrMessage : public Message {
+   public:
+    constexpr CyclicTXCtrMessage()
+        : Message{ID::CyclicTxCtr} {
+    }
+
+    bool CyclicTXCtr = FALSE;
 };
 
 #endif /*__MESSAGE_H__*/

@@ -182,6 +182,7 @@ extern "C" {
   flagsmask_t chEvtGetAndClearFlagsI(EventListener *elp);
   void chEvtSignal(Thread *tp, eventmask_t mask);
   void chEvtSignalI(Thread *tp, eventmask_t mask);
+  void chEvtSignalFromIsr(Thread *tp, eventmask_t mask);
   void chEvtBroadcastFlags(EventSource *esp, flagsmask_t flags);
   void chEvtBroadcastFlagsI(EventSource *esp, flagsmask_t flags);
   void chEvtDispatch(const evhandler_t *handlers, eventmask_t mask);

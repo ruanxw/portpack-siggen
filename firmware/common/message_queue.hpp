@@ -51,6 +51,14 @@ class MessageQueue {
     }
 
     template <typename T>
+    bool pushI(const T& message) {
+        static_assert(sizeof(T) <= Message::MAX_SIZE, "Message::MAX_SIZE too small for message type");
+        static_assert(std::is_base_of<Message, T>::value, "type is not based on Message");
+
+        return pushI(&message, sizeof(message));
+    }
+
+    template <typename T>
     bool push_and_wait(const T& message) {
         const bool result = push(message);
         if (result) {
@@ -109,6 +117,15 @@ class MessageQueue {
         const auto result = fifo.in_r(buf, len);
         chMtxUnlock();
 
+        const bool success = (result == len);
+        if (success) {
+            signal();
+        }
+        return success;
+    }
+
+    bool pushI(const void* const buf, const size_t len) {
+        const auto result = fifo.in_r(buf, len);
         const bool success = (result == len);
         if (success) {
             signal();

@@ -34,6 +34,7 @@
 #include "replay_thread.hpp"
 #include "ui_spectrum.hpp"
 #include "ui_transmitter.hpp"
+#include "chvt.h"
 
 #include <string>
 #include <memory>
@@ -67,6 +68,10 @@ class SigGenAppView : public View {
     const size_t buffer_count{3};
     std::filesystem::path config_file_name = u"/SigGen/config.txt";
 
+    VirtualTimer cycle_timer;
+    bool is_cycle_timer_enabled = false;   //避免在常发状态时，定时器没有启动，但是stop流程会重置定时器导致的中断抢占问题。
+    bool is_transmitting = false;     //因为间隔发送时，repaly线程的active状态就不能标志是否发送中，那么更新开始和停止的UI就会有问题，新增flag用来更新UI。
+
     void on_file_changed(const std::filesystem::path& new_file_path);
     void on_tx_progress(const uint32_t progress);
 
@@ -79,7 +84,12 @@ class SigGenAppView : public View {
     void file_error();
     void config_file_error();
     void load_last_config();
-    void save_last_config(const std::filesystem::path& new_file_path);
+    void save_last_config();
+
+    void stop_cyclic();
+    void start_cycle();
+    static void cycle_cb(void* arg);
+    void cyclic_tx_ctr(bool CyclicTXCtr);
 
     std::filesystem::path file_path{};
     std::unique_ptr<ReplayThread> replay_thread{};
@@ -90,19 +100,21 @@ class SigGenAppView : public View {
         "Open file"};
 
     Button button_load_last_config{
-        {0 * 8, 3 * 16, 17 * 8, 2 * 16},
+        {0 * 8, 4 * 16, 17 * 8, 2 * 16},
         "load last config"};
 
     Text text_filename{
-        {11 * 8, 0 * 16, 12 * 8, 16},
+        {11 * 8, 0 * 16, 30 * 8, 16},
         "-"};
+
     Text text_sample_rate{
-        {24 * 8, 0 * 16, 6 * 8, 16},
+        {12 * 8, 2 * 16, 6 * 8, 16},
         "-"};
 
     Text text_duration{
         {11 * 8, 1 * 16, 6 * 8, 16},
         "-"};
+
     ProgressBar progressbar{
         {18 * 8, 1 * 16, 12 * 8, 16}};
 
@@ -111,7 +123,7 @@ class SigGenAppView : public View {
         nav_};
 
     TransmitterView2 tx_view{
-        {12 * 8, 2 * 16},
+        {20 * 8, 2 * 16},
         /*short_ui*/ true};
 
     Checkbox check_loop{
@@ -119,6 +131,35 @@ class SigGenAppView : public View {
         4,
         LanguageHelper::currentMessages[LANG_LOOP],
         true};
+
+    Checkbox check_cycle_enable{
+        {0 * 8, 3 * 16},
+        15,
+        LanguageHelper::currentMessages[LANG_CYCLE_ENABLE],
+        true};
+
+    Text text_cycle_tx{
+        {17 * 8, 3 * 16, 3 * 8, 1 * 16},
+        "T:"};
+
+    NumberField field_cycle_tx{
+        {19 * 8, 3 * 16},
+        2,
+        {1, 30},
+        1,
+        ' '};
+
+    Text text_cycle_pause{
+        {23 * 8, 3 * 16, 3 * 8, 1 * 16},
+        "P:"};
+
+    NumberField field_cycle_pause{
+        {25 * 8, 3 * 16},
+        2,
+        {0, 30},
+        1,
+        ' '};
+
     ImageButton button_play{
         {0 * 8, 2 * 16, 2 * 8, 1 * 16},
         &bitmap_play,
@@ -148,6 +189,13 @@ class SigGenAppView : public View {
         [this](const Message* const p) {
             const auto message = *reinterpret_cast<const TXProgressMessage*>(p);
             this->on_tx_progress(message.progress);
+        }};
+
+    MessageHandlerRegistration message_handler_cyclic_tx_ctr{
+        Message::ID::CyclicTxCtr,
+        [this](const Message* const p) {
+            const auto message = *reinterpret_cast<const CyclicTXCtrMessage*>(p);
+            this->cyclic_tx_ctr(message.CyclicTXCtr);
         }};
 };
 

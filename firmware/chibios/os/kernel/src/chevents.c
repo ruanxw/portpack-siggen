@@ -236,6 +236,16 @@ void chEvtSignal(Thread *tp, eventmask_t mask) {
   chSysUnlock();
 }
 
+void chEvtSignalFromIsr(Thread *tp, eventmask_t mask) {
+
+  chDbgCheck(tp != NULL, "chEvtSignal");
+
+  chSysLockFromIsr();
+  chEvtSignalI(tp, mask);
+  //chSchRescheduleS();
+  chSysUnlockFromIsr();
+}
+
 /**
  * @brief   Adds a set of event flags directly to specified @p Thread.
  * @post    This function does not reschedule so a call to a rescheduling

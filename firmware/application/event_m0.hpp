@@ -81,10 +81,22 @@ class EventDispatcher {
         }
     }
 
+    static inline void events_flag_from_isr(const eventmask_t events) {
+        if (thread_event_loop) {
+            chEvtSignalFromIsr(thread_event_loop, events);
+        }
+    }
+
     template <typename T>
     static void send_message(T& message) {
         shared_memory.app_local_queue.push(message);
         events_flag(EVT_MASK_LOCAL);
+    }
+
+    template <typename T>
+    static void send_message_from_isr(T& message) {
+        shared_memory.app_local_queue.pushI(message);
+        events_flag_from_isr(EVT_MASK_LOCAL);
     }
 
     void emulateTouch(ui::TouchEvent event);

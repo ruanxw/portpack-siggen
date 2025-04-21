@@ -66,7 +66,8 @@ enum LangConsts {
     LANG_OPEN_FILE,
     LANG_SAVE_FILE,
     LANG_SEND,
-    LANG_RECV
+    LANG_RECV,
+    LANG_CYCLE_ENABLE
 };
 
 class LanguageHelper {
