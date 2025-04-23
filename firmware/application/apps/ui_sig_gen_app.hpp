@@ -96,27 +96,31 @@ class SigGenAppView : public View {
     bool ready_signal{false};
 
     Button button_open{
-        {0 * 8, 0 * 16, 10 * 8, 2 * 16},
+        {1 * 8, 4 * 16, 10 * 8, 2 * 16},
         "Open file"};
 
     Button button_load_last_config{
-        {0 * 8, 4 * 16, 17 * 8, 2 * 16},
+        {12 * 8, 4 * 16, 17 * 8, 2 * 16},
         "load last config"};
 
     Text text_filename{
-        {11 * 8, 0 * 16, 30 * 8, 16},
+        {0 * 8, 0 * 16, 50 * 8, 16},
         "-"};
 
     Text text_sample_rate{
         {12 * 8, 2 * 16, 6 * 8, 16},
         "-"};
 
+    Text text_duration_prefix{
+        {0 * 8, 1 * 16, 9 * 8, 16},
+        "Duration:"};
+
     Text text_duration{
-        {11 * 8, 1 * 16, 6 * 8, 16},
+        {10 * 8, 1 * 16, 6 * 8, 16},
         "-"};
 
     ProgressBar progressbar{
-        {18 * 8, 1 * 16, 12 * 8, 16}};
+        {17 * 8, 1 * 16, 12 * 8, 16}};
 
     TxFrequencyField field_frequency{
         {2 * 8, 2 * 16},

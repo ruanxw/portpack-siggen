@@ -82,7 +82,8 @@ void SigGenAppView::on_file_changed(const fs::path& new_file_path) {
     // UI Fixup.
     text_sample_rate.set(unit_auto_scale(transmitter_model.sampling_rate(), 3, 1) + "Hz");
     progressbar.set_max(file_size);
-    text_filename.set(truncate(file_path.filename().string(), 12));
+    //text_filename.set(truncate(file_path.filename().string(), 12));
+    text_filename.set(file_path.filename().string());
 
     auto duration = ms_duration(file_size, transmitter_model.sampling_rate(), 2);
     text_duration.set(to_string_time_ms(duration));
@@ -205,6 +206,7 @@ SigGenAppView::SigGenAppView(
         &button_load_last_config,
         &text_filename,
         &text_sample_rate,
+        &text_duration_prefix,
         &text_duration,
         &progressbar,
         &field_frequency,
@@ -255,9 +257,9 @@ void SigGenAppView::load_last_config(){
         for (const auto& line : reader) {
             if (line.length() == 0 || line[0] == '#'  || line[0] == '\r' || line[0] == '\n')
                 continue;
-            UsbSerialAsyncmsg::asyncmsg("i = >>>");
-            UsbSerialAsyncmsg::asyncmsg(i);
-            UsbSerialAsyncmsg::asyncmsg(line);
+            //UsbSerialAsyncmsg::asyncmsg("i = >>>");
+            //UsbSerialAsyncmsg::asyncmsg(i);
+            //UsbSerialAsyncmsg::asyncmsg(line);
             switch(i++){
                 case 0:   //第一行是IQ文件
                     //std::wstring_convert<std::codecvt_utf8_utf16<std::filesystem::path::value_type>, std::filesystem::path::value_type> conv;
@@ -282,12 +284,12 @@ void SigGenAppView::load_last_config(){
 
                 case 2: //第六行是cycle tx time
                     field_cycle_tx.set_value(static_cast<int32_t>(std::stoi(line.c_str())));
-                    UsbSerialAsyncmsg::asyncmsg(static_cast<uint32_t>(std::stoi(line.c_str())));
+                    //UsbSerialAsyncmsg::asyncmsg(static_cast<uint32_t>(std::stoi(line.c_str())));
                     break;
 
                 case 3: //第五行是cycle pause time
                     field_cycle_pause.set_value(static_cast<int32_t>(std::stoi(line.c_str())));
-                    UsbSerialAsyncmsg::asyncmsg(static_cast<uint32_t>(std::stoi(line.c_str())));
+                    //UsbSerialAsyncmsg::asyncmsg(static_cast<uint32_t>(std::stoi(line.c_str())));
                     break;
 
             }        
@@ -300,6 +302,7 @@ void SigGenAppView::load_last_config(){
         std::filesystem::path sigwave_path = conv.from_bytes(result.value().c_str());
         on_file_changed(sigwave_path);
     } */
+    }
 }
 
 void SigGenAppView::save_last_config(){
@@ -325,7 +328,7 @@ void SigGenAppView::save_last_config(){
     config_content += "\r\n";   //第六行为循环发送中的发射时间
     config_content += std::to_string(field_cycle_pause.value()); //field_cycle_pause.value().string();
     config_content += "\r\n";   //第七行为循环发送中的暂停时间
-    UsbSerialAsyncmsg::asyncmsg(config_content);
+    //UsbSerialAsyncmsg::asyncmsg(config_content);
 
     auto error_write = config_file.write(config_content.c_str(), config_content.size());
     config_file.close();
@@ -350,13 +353,13 @@ void SigGenAppView::cyclic_tx_ctr(bool CyclicTXCtr){
     std::string cyclic_tx_ctr = "cyclic_tx_ctr function:";
     std::string tx_start = "cyclic_tx_ctr: tx enable";  
     std::string tx_pause = "cyclic_tx_ctr: tx pause";
-    UsbSerialAsyncmsg::asyncmsg(cyclic_tx_ctr);
+    //UsbSerialAsyncmsg::asyncmsg(cyclic_tx_ctr);
     if(CyclicTXCtr){
-        UsbSerialAsyncmsg::asyncmsg(tx_start);
+        //UsbSerialAsyncmsg::asyncmsg(tx_start);
         chVTSet(&cycle_timer, S2ST(field_cycle_tx.value()), cycle_cb, this);
         start(); // 开始信号生成
     }else{
-        UsbSerialAsyncmsg::asyncmsg(tx_pause);
+        //UsbSerialAsyncmsg::asyncmsg(tx_pause);
         chVTSet(&cycle_timer, S2ST(field_cycle_pause.value()), cycle_cb, this);
         stop(false); // 开始信号生成
     }
